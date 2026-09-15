@@ -1,0 +1,34 @@
+# Environment configuration files (contain secrets)
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+debug/
+
+# OpenAPI spec (kept locally, not tracked)
+uas-reporting-oas3-sap-mcp.json
+
+# Playwright automation (local browser profile, generated screenshots, venv)
+automation/.pw-profile/
+automation/screenshots/
+automation/.venv/
+automation/
+
+*.drawio
+*.svg
+
+sap-integration-suite-mcp-blog-post*
+uas-reporting-oas3-sap-mcp.json
+
+.playwright-mcp/

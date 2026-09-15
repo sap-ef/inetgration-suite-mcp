@@ -1,0 +1,12 @@
+# OAuth client configuration
+IDENTITY_ZONE=replace-with-your-subdomain
+AUTH_REGION=eu10
+
+# MCP endpoint configuration
+VIRTUAL_HOST=replace-with-your-integration-cell-host
+MCP_PATH=uas-reporting
+
+# Optional overrides
+# SAP_MCP_TOKEN_URL=https://replace-with-your-subdomain.authentication.eu10.hana.ondemand.com/oauth/token
+# MCP_TOOL_NAME=<exact-cloud-credits-tool-name-from-tools-list>
+# MCP_TOOL_ARGS={"viewPhases":"CURRENT"}

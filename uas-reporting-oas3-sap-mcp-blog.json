@@ -1,0 +1,843 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "blog Resource Consumption",
+    "description": "The Resource Consumption service provides REST APIs that are responsible for gathering, storing, and making usage information available for all services and applications in all regions in a cloud deployment, for the purpose of central analysis, reporting, and license auditing.\nThe service accumulates the information and provides reports in several business systems (reporting and operations) for resource planning and cross billing purposes.\nNOTE: The SAP Usage Data Management service for SAP BTP is not sold to SAP BTP customers as a service; however, customers can see their usage data in the SAP BTP cockpit, for example, in the Usage Analytics pages.",
+    "version": "1.0",
+    "termsOfService": "http://www.sap.com",
+    "x-apiProvider": "UAS_Reporting_Destination",
+    "x-relativeUrl": "/reports/v1"
+  },
+  "tags": [
+    {
+      "name": "Usage and Cost Management",
+      "description": "Usage and Cost Management"
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://replace-with-your-integration-cell-host/blog-uas-reporting/v1",
+      "description": "SAP Integration Suite Integration Cell endpoint"
+    }
+  ],
+  "paths": {
+    "/cloudCreditsDetails": {
+      "get": {
+        "tags": [
+          "Usage and Cost Management"
+        ],
+        "summary": "Get cloud credit data for a global account",
+        "description": "Get cloud credit data history for a global account. <br /><br />NOTE: You cannot use this API with global accounts that are licensed for the subscription-based commercial model. <br />\nNOTE: Global accounts are the only contractual billable entity for SAP BTP. <br /><br />Required scope: $XSAPPNAME.reporting.GA_Admin",
+        "operationId": "cloudCreditsDetails",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CloudCreditsDetailsResponseObject"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Usage Data Not Found"
+          }
+        },
+        "security": [
+          {
+            "OAuth2": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "viewPhases",
+            "in": "query",
+            "description": "Show the cloud credit history: <br /><li>CURRENT: For the current phase; the default setting. </li><li>ALL: For all phases.</li>",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ALL",
+                "CURRENT"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/monthlyDirectoryUsage": {
+      "get": {
+        "tags": [
+          "Usage and Cost Management"
+        ],
+        "summary": "Get monthly usage reporting data for a directory",
+        "description": "Get monthly usage reporting data for a directory and a specified time period. <br /><br />NOTE: Use the monthlyDirectoryUsage if you have different directories that require different levels of authorization in your global account. To maintain data security, this API ensures that the usage data of users in specific directories is kept separate and only the administrators of the specific directories can access it.<br />If you do not need specialized authorizations for directories, we recommend using the MonthlyUsage API. The MonthlyUsage API provides a more comprehensive overview of usage metrics for the global account and its various directories.<br /><br />NOTE: Before using the monthlyDirectoryUsage API, make sure that:<br />(1) The method is used in the context of a directory under the global account and the directory contains one or more subaccounts.<br />(2) User management for the directory is enabled. <br /><br />Required scope: $XSAPPNAME.reporting.Directory_Admin",
+        "operationId": "monthlyDirectoryUsage",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MonthlyUsageResponseList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Usage data not found"
+          }
+        },
+        "security": [
+          {
+            "OAuth2": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "fromDate",
+            "in": "query",
+            "description": "Start date for querying the directory’s monthly usage data<br />Example:<br />fromDate=201901, toDate=201912 <br />This query will return the usage data for the period between January 2019 and December 2019.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "toDate",
+            "in": "query",
+            "description": "End date for querying the directory’s monthly usage data<br />Example:<br />fromDate=201901, toDate=201912 <br />This query will return the usage data for the period between January 2019 and December 2019.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ]
+      }
+    },
+    "/monthlySubaccountsCost": {
+      "get": {
+        "tags": [
+          "Usage and Cost Management"
+        ],
+        "summary": "Get monthly cost reporting data for all subaccounts",
+        "description": "Get monthly cost reporting data for all subaccounts and a specified time period. Applies to global accounts that use the Cloud Platform Enterprise Agreement (CPEA) consumption-based commercial model. <br /><br />NOTE: You cannot use this API with global accounts that are licensed for the subscription-based commercial model. <br /><br />NOTE: Global accounts are the only contractual billable entity for SAP BTP. Directories and subaccounts are used as structural entities in global accounts, and their usage and cost data should only be used for your internal cost estimations. The relative calculation per billable usage within each subaccount is an estimation only as it is based on certain measures which in some cases can either be different from the metrics that are presented in the <b>Global Account Costs</b> tab or which use different formulas than the ones used for billing. <br /><br />Required scope: $XSAPPNAME.reporting.GA_Admin<br />",
+        "operationId": "monthlyUsageSubaccountCost",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MonthlyCostResponseList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Usage data not found"
+          }
+        },
+        "security": [
+          {
+            "OAuth2": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "fromDate",
+            "in": "query",
+            "description": "Start date for querying the global account’s monthly usage data<br />Example:<br />fromDate=201901, toDate=201912 <br />This query will return the usage data for the period between January 2019 and December 2019.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "toDate",
+            "in": "query",
+            "description": "End date for querying the global account’s monthly usage data<br />Example:<br />fromDate=201901, toDate=201912 <br />This query will return the usage data for the period between January 2019 and December 2019.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ]
+      }
+    },
+    "/monthlyUsage": {
+      "get": {
+        "tags": [
+          "Usage and Cost Management"
+        ],
+        "summary": "Get monthly usage reporting data for a global account",
+        "description": "Get monthly usage reporting data for a global account and a specified time period. <br /><br />Required scope: $XSAPPNAME.reporting.GA_Admin",
+        "operationId": "monthlyUsage",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MonthlyUsageResponseList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Usage data not found"
+          }
+        },
+        "security": [
+          {
+            "OAuth2": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "fromDate",
+            "in": "query",
+            "description": "Start date for querying the global account’s monthly usage data<br />Example:<br />fromDate=201901, toDate=201912 <br />This query will return the usage data for the period between January 2019 and December 2019.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "toDate",
+            "in": "query",
+            "description": "End date for querying the global account’s monthly usage data<br />Example:<br />fromDate=201901, toDate=201912 <br />This query will return the usage data for the period between January 2019 and December 2019.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ]
+      }
+    },
+    "/subaccountUsage": {
+      "get": {
+        "tags": [
+          "Usage and Cost Management"
+        ],
+        "summary": "Get usage reporting data for a subaccount",
+        "description": "Get usage reporting data for a subaccount and a specified time period.<br /><br />Required scope: $XSAPPNAME.reporting.GA_Admin",
+        "operationId": "dailySubaccountUsage",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubaccountUsageResponseList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Usage data not found"
+          }
+        },
+        "security": [
+          {
+            "OAuth2": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "fromDate",
+            "in": "query",
+            "description": "Start date for querying the subaccount usage data using the format YYYYMMDD.<br />Example:<br />fromDate=20190101, toDate=20191201<br />This query returns the subaccount usage data for the period January 1st, 2019 to December 1st, 2019.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "periodPerspective",
+            "in": "query",
+            "description": "The time division of the subaccount usage report, namely, DAY, WEEK and MONTH according to the specified time period. If no period perspective is defined, then the subaccount usage data is returned for the entire period as a single element.<br /> If you select DAY, the maximum search period is four months. If you select WEEK, the search period must not exceed one year.<br />Example:<br /> periodPerspective=WEEK <br />This query returns the subaccount usage data aggregated by week.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DAY",
+                "MONTH",
+                "WEEK"
+              ]
+            }
+          },
+          {
+            "name": "subaccountId",
+            "in": "query",
+            "description": "Unique ID of the subaccount.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "toDate",
+            "in": "query",
+            "description": "End date for querying the subaccount usage data using the format YYYYMMDD.<br />Example:<br />fromDate=20190101, toDate=20191201<br />This query returns the subaccount usage data for the period January 1st, 2019 to December 1st, 2019.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CloudCreditsDetailsResponseObject": {
+        "type": "object",
+        "properties": {
+          "contracts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContractResponseObject"
+            }
+          },
+          "globalAccountId": {
+            "type": "string",
+            "description": "The unique ID of the global account."
+          },
+          "globalAccountName": {
+            "type": "string",
+            "description": "The display name of the global account."
+          }
+        },
+        "title": "CloudCreditsDetailsResponseObject"
+      },
+      "ContractResponseObject": {
+        "type": "object",
+        "properties": {
+          "contractEndDate": {
+            "type": "string",
+            "description": "The date that the contract finishes. Date is in the format YYYY-MM-DD."
+          },
+          "contractStartDate": {
+            "type": "string",
+            "description": "The date that the contract begins. Date is in the format YYYY-MM-DD."
+          },
+          "currency": {
+            "type": "string",
+            "description": "The currency used to pay for the contract."
+          },
+          "phases": {
+            "type": "array",
+            "description": "The period for which a contract is purchased is broken down into smaller parts and each part is called a phase.",
+            "items": {
+              "$ref": "#/components/schemas/PhasesResponseObject"
+            }
+          }
+        },
+        "title": "ContractResponseObject"
+      },
+      "MonthlyCostResponseObject": {
+        "type": "object",
+        "properties": {
+          "cost": {
+            "type": "number",
+            "format": "double",
+            "description": "The subaccount usage cost for a specified month."
+          },
+          "crmSku": {
+            "type": "string",
+            "description": "The SKU of the service consumed."
+          },
+          "currency": {
+            "type": "string",
+            "description": "The currency in which costs are shown. Defined on the global account level, upon signing the contract."
+          },
+          "dataCenter": {
+            "type": "string",
+            "description": "The technical name of the landscape, (as identified by core services for SAP BTP), on which the usage was originally initialized. Example values: cf-us10-staging, cf-eu10-canary, cf-eu20."
+          },
+          "dataCenterName": {
+            "type": "string",
+            "description": "The descriptive name of the data center."
+          },
+          "directoryId": {
+            "type": "string",
+            "description": "The unique ID of the directory."
+          },
+          "directoryName": {
+            "type": "string",
+            "description": "The descriptive name of the directory for customer-facing UIs."
+          },
+          "estimated": {
+            "type": "boolean",
+            "description": "The billing status of the billable item. If TRUE the item was not billed."
+          },
+          "globalAccountId": {
+            "type": "string",
+            "description": "The unique ID of the global account to which the subaccounts belong, and which is the context for billing the customer."
+          },
+          "globalAccountName": {
+            "type": "string",
+            "description": "The descriptive name of the global account for customer-facing UIs."
+          },
+          "measureId": {
+            "type": "string",
+            "description": "The original measure of the usage as reported by the technical usage API payload."
+          },
+          "metricName": {
+            "type": "string",
+            "description": "The name of the metric used by cloud services for customer-facing UIs."
+          },
+          "plan": {
+            "type": "string",
+            "description": "The ID of the service plan to which the measured usage data is related."
+          },
+          "planName": {
+            "type": "string",
+            "description": "The name of the plan for customer-facing UIs."
+          },
+          "reportYearMonth": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The year and month for which the cost is reported."
+          },
+          "serviceId": {
+            "type": "string",
+            "description": "The ID of the service to which the measured usage data is related."
+          },
+          "serviceName": {
+            "type": "string",
+            "description": "The name of the service for customer-facing UIs."
+          },
+          "subaccountId": {
+            "type": "string",
+            "description": "The unique ID of the subaccount for which to get the usage data."
+          },
+          "subaccountName": {
+            "type": "string",
+            "description": "The descriptive name of the subaccount for customer-facing UIs."
+          },
+          "unitPlural": {
+            "type": "string",
+            "description": "Predefined name for more than one unit of usage for the given metric. Generally a short name for use in customer-facing UIs."
+          },
+          "unitSingular": {
+            "type": "string",
+            "description": "Pre-defined name for one unit of usage."
+          },
+          "usage": {
+            "type": "number",
+            "format": "double",
+            "description": "The reported usage in numbers for the given metric."
+          },
+          "quota": {
+            "type": "number",
+            "format": "double",
+            "description": "The quantity of the usage of a resource that you purchased by subscription for the service plan at the subaccount level."
+          },
+          "actualUsage": {
+            "type": "number",
+            "format": "double",
+            "description": "The usage that is not covered by the subaccount quota and for which you are charged."
+          },
+          "chargedBlocks": {
+            "type": "number",
+            "format": "double",
+            "description": "The number of billing blocks for which you are charged if the usage is billed in blocks of a usage metric."
+          },
+          "paygCost": {
+            "type": "number",
+            "format": "double",
+            "description": "Display the additional costs that are billed beyond the prepaid cloud credits."
+          },
+          "cloudCreditsCost": {
+            "type": "number",
+            "format": "double",
+            "description": "Show the costs covered by prepaid cloud credits."
+          },
+          "startIsoDate": {
+            "type": "string",
+            "description": "The first day of the month for which the cost is returned. The start date is specified in the format YYYY-MM-DD, for example 2023-01-01."
+          },
+          "endIsoDate": {
+            "type": "string",
+            "description": "The first day of the next month after the month for which the cost is returned. The end date is specified in the format YYYY-MM-DD, for example 2023-12-01."
+          }
+        },
+        "title": "MonthlyCostResponseObject"
+      },
+      "MonthlyUsageResponseObject": {
+        "type": "object",
+        "properties": {
+          "dataCenter": {
+            "type": "string",
+            "description": "The technical name of the landscape, (as identified by core services for SAP BTP), on which the usage was originally initialized. Example values: cf-us10-staging, cf-eu10-canary, cf-eu20."
+          },
+          "dataCenterName": {
+            "type": "string",
+            "description": "The descriptive name of the data center."
+          },
+          "directoryId": {
+            "type": "string",
+            "description": "The unique ID of the directory."
+          },
+          "directoryName": {
+            "type": "string",
+            "description": "The descriptive name of the directory for customer-facing UIs."
+          },
+          "environmentInstanceId": {
+            "type": "string",
+            "description": "The unique ID of the consumer environment instance."
+          },
+          "environmentInstanceName": {
+            "type": "string",
+            "description": "The name of the consumer environment instance for customer-facing UIs."
+          },
+          "globalAccountId": {
+            "type": "string",
+            "description": "The unique ID of the global account to which the subaccounts belong, and which is the context for billing the customer."
+          },
+          "globalAccountName": {
+            "type": "string",
+            "description": "The descriptive name of the global account for customer-facing UIs."
+          },
+          "identityZone": {
+            "type": "string",
+            "description": "Consumer identity zone."
+          },
+          "instanceId": {
+            "type": "string",
+            "description": "Consumer instance ID."
+          },
+          "measureId": {
+            "type": "string",
+            "description": "The original measure of the usage as reported by the technical usage API payload."
+          },
+          "metricName": {
+            "type": "string",
+            "description": "The name of the metric used by cloud services for customer-facing UIs."
+          },
+          "plan": {
+            "type": "string",
+            "description": "The ID of the service plan to which the measured usage data is related."
+          },
+          "planName": {
+            "type": "string",
+            "description": "The name of the plan for customer-facing UIs."
+          },
+          "reportYearMonth": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The year and month for which the cost is reported."
+          },
+          "serviceId": {
+            "type": "string",
+            "description": "The ID of the service to which the measured usage data is related."
+          },
+          "serviceName": {
+            "type": "string",
+            "description": "The name of the service for customer-facing UIs."
+          },
+          "spaceId": {
+            "type": "string",
+            "description": "The ID of the consumer space."
+          },
+          "spaceName": {
+            "type": "string",
+            "description": "The descriptive name of the consumer space for customer-facing UIs."
+          },
+          "subaccountId": {
+            "type": "string",
+            "description": "The unique ID of the subaccount for which to get the usage data."
+          },
+          "subaccountName": {
+            "type": "string",
+            "description": "The descriptive name of the subaccount for customer-facing UIs."
+          },
+          "unitPlural": {
+            "type": "string",
+            "description": "Predefined name for more than one unit of usage for the given metric. Generally a short name for use in customer-facing UIs."
+          },
+          "unitSingular": {
+            "type": "string",
+            "description": "Pre-defined name for one unit of usage."
+          },
+          "usage": {
+            "type": "number",
+            "format": "double",
+            "description": "The reported usage in numbers for the given metric."
+          },
+          "application": {
+            "type": "string",
+            "description": "Optionally, show the application’s details per usage record."
+          },
+          "startIsoDate": {
+            "type": "string",
+            "description": "The first day of the month for which the usage is returned. The start date is specified in the format YYYY-MM-DD, for example 2023-01-01."
+          },
+          "endIsoDate": {
+            "type": "string",
+            "description": "The first day of the next month after the month for which the usage is returned. The end date is specified in the format YYYY-MM-DD, for example."
+          }
+        },
+        "title": "MonthlyUsageResponseObject"
+      },
+      "PhaseUpdates": {
+        "type": "object",
+        "properties": {
+          "balance": {
+            "type": "number",
+            "format": "double",
+            "description": "The residual amount of cloud credits available."
+          },
+          "cloudCreditsForPhase": {
+            "type": "number",
+            "format": "double",
+            "description": "The complete amount of cloud credits available in this phase."
+          },
+          "phaseUpdatedOn": {
+            "type": "string",
+            "description": "The date that the phase was updated. Date is in the format YYYY-MM-DD."
+          }
+        },
+        "title": "PhaseUpdates"
+      },
+      "PhasesResponseObject": {
+        "type": "object",
+        "properties": {
+          "phaseEndDate": {
+            "type": "string",
+            "description": "Phase end date is in the format YYYY-MM-DD."
+          },
+          "phaseStartDate": {
+            "type": "string",
+            "description": "Phase start date is in the format YYYY-MM-DD."
+          },
+          "phaseUpdates": {
+            "type": "array",
+            "description": "History relating to phase updates.",
+            "items": {
+              "$ref": "#/components/schemas/PhaseUpdates"
+            }
+          }
+        },
+        "title": "PhasesResponseObject"
+      },
+      "MonthlyCostResponseList": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MonthlyCostResponseObject"
+            }
+          }
+        },
+        "title": "MonthlyCostResponseList"
+      },
+      "MonthlyUsageResponseList": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MonthlyUsageResponseObject"
+            }
+          }
+        },
+        "title": "MonthlyUsageResponseList"
+      },
+      "SubaccountUsageResponseList": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SubaccountUsageResponseObject"
+            }
+          }
+        },
+        "title": "SubaccountUsageResponseList"
+      },
+      "SubaccountUsageResponseObject": {
+        "type": "object",
+        "properties": {
+          "categoryId": {
+            "type": "number",
+            "format": "double",
+            "description": "The unique ID of the product category."
+          },
+          "categoryName": {
+            "type": "string",
+            "description": "The name of the product category."
+          },
+          "dataCenter": {
+            "type": "string",
+            "description": "The technical name of the landscape, (as identified by core services for SAP BTP), on which the usage was originally initialized. Example values: cf-us10-staging, cf-eu10-canary, cf-eu20."
+          },
+          "dataCenterName": {
+            "type": "string",
+            "description": "The descriptive name of the data center."
+          },
+          "directoryId": {
+            "type": "string",
+            "description": "The unique ID of the directory."
+          },
+          "directoryName": {
+            "type": "string",
+            "description": "The descriptive name of the directory for customer-facing UIs."
+          },
+          "environmentInstanceId": {
+            "type": "string",
+            "description": "The unique ID of the consumer environment instance."
+          },
+          "environmentInstanceName": {
+            "type": "string",
+            "description": "The name of the consumer environment instance for customer-facing UIs."
+          },
+          "globalAccountId": {
+            "type": "string",
+            "description": "The unique ID of the global account to which the subaccounts belong, and which is the context for billing the customer."
+          },
+          "globalAccountName": {
+            "type": "string",
+            "description": "The descriptive name of the global account for customer-facing UIs."
+          },
+          "identityZone": {
+            "type": "string",
+            "description": "Consumer identity zone."
+          },
+          "instanceId": {
+            "type": "string",
+            "description": "Consumer instance ID."
+          },
+          "measureId": {
+            "type": "string",
+            "description": "The original measure of the usage as reported by the technical usage API payload."
+          },
+          "metricName": {
+            "type": "string",
+            "description": "The name of the metric used by cloud services for customer-facing UIs."
+          },
+          "periodEndDate": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The last day of the time division requested for the subaccount usage report."
+          },
+          "periodStartDate": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The first day of the time division requested for the subaccount usage report."
+          },
+          "plan": {
+            "type": "string",
+            "description": "The ID of the service plan to which the measured usage data is related."
+          },
+          "planName": {
+            "type": "string",
+            "description": "The name of the plan for customer-facing UIs."
+          },
+          "serviceId": {
+            "type": "string",
+            "description": "The ID of the service to which the measured usage data is related."
+          },
+          "serviceName": {
+            "type": "string",
+            "description": "The name of the service for customer-facing UIs."
+          },
+          "spaceId": {
+            "type": "string",
+            "description": "The ID of the consumer space."
+          },
+          "spaceName": {
+            "type": "string",
+            "description": "The descriptive name of the consumer space for customer-facing UIs."
+          },
+          "subaccountId": {
+            "type": "string",
+            "description": "The unique ID of the subaccount for which to get the usage data."
+          },
+          "subaccountName": {
+            "type": "string",
+            "description": "The descriptive name of the subaccount for customer-facing UIs."
+          },
+          "unitPlural": {
+            "type": "string",
+            "description": "Predefined name for more than one unit of usage for the given metric. Generally a short name for use in customer-facing UIs."
+          },
+          "unitSingular": {
+            "type": "string",
+            "description": "Pre-defined name for one unit of usage."
+          },
+          "usage": {
+            "type": "number",
+            "format": "double",
+            "description": "The reported usage in numbers for the given metric."
+          },
+          "application": {
+            "type": "string",
+            "description": "Optionally, show the application’s details per usage record."
+          },
+          "startIsoDate": {
+            "type": "string",
+            "description": "The first day of the time division requested for the subaccount usage report. The start date is specified in the format YYYY-MM-DD, for example 2023-01-01."
+          },
+          "endIsoDate": {
+            "type": "string",
+            "description": "The last day of the time division requested for the subaccount usage report. The end date is specified in the format YYYY-MM-DD, for example 2023-12-01."
+          }
+        },
+        "title": "SubaccountUsageResponseObject"
+      }
+    },
+    "securitySchemes": {
+      "OAuth2": {
+        "type": "oauth2",
+        "description": "OAuth 2.0 Client Credentials for the SAP Integration Suite API Artifact.",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "https://replace-with-your-subdomain.authentication.eu10.hana.ondemand.com/oauth/token",
+            "scopes": {}
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "OAuth2": []
+    }
+  ],
+  "x-sap-shortText": "Generate reports based on the resource and cost consumption within your accounts.",
+  "externalDocs": {
+    "description": "Monitoring Usage Information Using APIs of the SAP Usage Data Management Service for SAP BTP [Feature Set B]",
+    "url": "https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/latest/en-US/bf2b3043d0474ea0a2c11c0390460d85.html"
+  },
+  "x-sap-stateInfo": {
+    "state": "Active"
+  }
+}
